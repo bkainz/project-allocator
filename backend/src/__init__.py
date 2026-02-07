@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI, Request, Security
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from starlette_csrf import CSRFMiddleware
 
@@ -20,6 +21,8 @@ from .routers import (
     proposals,
     shortlists,
     users,
+    uploads,
+    forms,
 )
 
 
@@ -55,6 +58,11 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Mount uploads directory
+    # Ensure directory exists
+    os.makedirs("uploads", exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
     # Status router, not subjected to Azure Security
     status_router = APIRouter()
 
@@ -63,6 +71,8 @@ def create_application() -> FastAPI:
         return {"ok": True}
 
     app.include_router(status_router)
+    app.include_router(uploads.router)
+    app.include_router(forms.router)
 
     # Main API router
     router = APIRouter(

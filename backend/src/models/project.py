@@ -57,7 +57,7 @@ class ProjectReadWithDetails(ProjectRead):
 
 
 class ProjectReadWithProposal(ProjectRead):
-    proposal: "ProposalRead"
+    proposal: Optional["ProposalRead"] = None
 
 
 class ProjectReadWithAllocations(ProjectRead):
@@ -83,7 +83,7 @@ class ProjectUpdateWithDetails(ProjectUpdate):
 
 
 class ProjectDetailBase(SQLModel):
-    value: Any  # any type to allow input to be parsed
+    value: Any = None  # any type to allow input to be parsed
 
 
 class ProjectDetail(TimestampMixin, ProjectDetailBase, table=True):
