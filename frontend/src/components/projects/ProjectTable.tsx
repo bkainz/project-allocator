@@ -38,12 +38,14 @@ export function ProjectTable({ projects }: { projects: ProjectReadWithProposal[]
     {
       title: "Proposer",
       render: (project: ProjectReadWithProposal) => (
+        project.proposal ? (
         <Link
           to={`/users/${project.proposal.proposer.id}`}
           onMouseOver={() => prefetchUser(project.proposal.proposer.id)}
         >
           <Highlighter searchWords={[searchText]} textToHighlight={project.proposal.proposer.name} />
         </Link>
+        ) : <span>System</span>
       ),
     },
   ];
@@ -62,7 +64,7 @@ export function ProjectTable({ projects }: { projects: ProjectReadWithProposal[]
         columns={columns}
         dataSource={projects
           .filter((project) =>
-            (project.title + project.description + project.proposal.proposer.name)
+            (project.title + project.description + (project.proposal?.proposer.name || ""))
               .toLowerCase()
               .includes(searchText.toLowerCase()),
           )

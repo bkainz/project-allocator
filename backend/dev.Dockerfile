@@ -7,9 +7,10 @@ WORKDIR /api
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends build-essential libpq-dev 
 
-RUN pip install poetry
+RUN pip install poetry packaging --upgrade
 COPY pyproject.toml poetry.lock /api/
 RUN poetry install --no-root --no-interaction --no-ansi
+RUN pip install packaging --upgrade
 
 COPY .env alembic.ini main.py /api/
 COPY src /api/src

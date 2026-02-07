@@ -12,6 +12,9 @@ class AllocationBase(SQLModel):
 
     # True if admin has blocked users from accepting/rejecting allocation.
     locked: bool = False
+    
+    # URL to the uploaded thesis (Student Submission)
+    thesis_file: Optional[str] = None
 
 
 # Although allocation is one-to-many relationship,

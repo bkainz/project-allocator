@@ -12,6 +12,7 @@ import {
   Slider,
   Switch,
   TimePicker,
+  Upload,
 } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -143,6 +144,8 @@ function ProjectDetailItem({
         return <Radio.Group options={options} />;
       case "categories":
         return <CategoriesField detail={detail} template={template} />;
+      case "file":
+        return <FileUploader />;
     }
   }
 
@@ -178,4 +181,34 @@ function CategoriesField({
   }
 
   return <EditableTags tags={categories} onUpdate={setCategoriesWithForm} />;
+}
+
+function FileUploader({ value, onChange }: { value?: string; onChange?: (url: string) => void }) {
+  const [fileList, setFileList] = useState<any[]>(
+    value ? [{ uid: "-1", name: value.split("/").pop() || "File", status: "done", url: value }] : []
+  );
+
+  const handleChange: any = ({ file, fileList }: any) => {
+    let newFileList = [...fileList];
+    newFileList = newFileList.slice(-1); // Limit to 1 file
+
+    if (file.status === "done") {
+      const url = file.response?.url;
+      if (onChange && url) onChange(url);
+    } else if (file.status === "removed") {
+      if (onChange) onChange("");
+    }
+    
+    setFileList(newFileList);
+  };
+
+  return (
+    <Upload 
+      action="/api/uploads/" 
+      fileList={fileList} 
+      onChange={handleChange}
+    >
+      <Button>Upload File</Button>
+    </Upload>
+  );
 }

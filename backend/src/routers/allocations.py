@@ -1,7 +1,7 @@
 from operator import and_
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from sqlmodel import Session, select
 
 from .. import algorithms
@@ -181,6 +181,24 @@ async def reject_allocation(
 
     user.allocation.accepted = False
     session.add(user)
+    session.commit()
+    return {"ok": True}
+
+
+@router.post(
+    "/users/me/allocation/thesis",
+    dependencies=[Security(check_student)],
+)
+async def submit_thesis(
+    user: Annotated[User, Depends(get_user)],
+    session: Annotated[Session, Depends(get_session)],
+    thesis_url: str = Body(..., embed=True),
+):
+    if not user.allocation:
+        raise HTTPException(status_code=404, detail="User not allocated to project")
+    
+    user.allocation.thesis_file = thesis_url
+    session.add(user.allocation)
     session.commit()
     return {"ok": True}
 
